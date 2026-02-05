@@ -370,18 +370,27 @@
             btn.classList.add('active');
 
             var filter = btn.getAttribute('data-filter');
+            var visibleIndex = 0;
 
             projectCards.forEach(function(card) {
                 if (filter === 'all' || card.getAttribute('data-category') === filter) {
                     card.classList.remove('hidden');
+                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
                     card.style.opacity = '0';
                     card.style.transform = 'translateY(20px)';
+                    // Stagger the entrance
+                    var delay = visibleIndex * 80;
+                    visibleIndex++;
                     setTimeout(function() {
                         card.style.opacity = '1';
                         card.style.transform = 'translateY(0)';
-                    }, 50);
+                    }, delay + 50);
                 } else {
-                    card.classList.add('hidden');
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(function() {
+                        card.classList.add('hidden');
+                    }, 300);
                 }
             });
         });
