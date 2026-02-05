@@ -2213,6 +2213,45 @@ button, input, textarea {
     }
 }
 
+/* ==================== FOCUS STYLES (Keyboard Navigation) ==================== */
+*:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Don't show focus outline for mouse clicks */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.btn:focus-visible {
+    outline-offset: 4px;
+    box-shadow: var(--shadow-glow);
+}
+
+.social-icon:focus-visible,
+.contact-social:focus-visible,
+.project-link-icon:focus-visible {
+    outline-offset: 4px;
+}
+
+.filter-btn:focus-visible {
+    outline-offset: 2px;
+}
+
+.nav-link:focus-visible {
+    outline-offset: 4px;
+}
+
+.theme-toggle:focus-visible {
+    outline-offset: 4px;
+}
+
+.hamburger:focus-visible {
+    outline-offset: 4px;
+}
+
 /* ==================== REDUCED MOTION ==================== */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
