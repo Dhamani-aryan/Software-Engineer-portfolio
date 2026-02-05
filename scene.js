@@ -433,12 +433,25 @@
     animate();
 
     // ==================== RESIZE HANDLER ====================
-    window.addEventListener('resize', function() {
+    var resizeTimeout;
+    function handleResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        particleMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+        var maxPixelRatio = window.innerWidth < 768 ? 1.5 : 2;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
+        particleMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, maxPixelRatio);
+    }
+
+    // Debounce resize to prevent rapid re-renders during orientation change
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(handleResize, 150);
+    });
+
+    // Also listen for orientation change on mobile
+    window.addEventListener('orientationchange', function() {
+        setTimeout(handleResize, 300);
     });
 
     // ==================== SCROLL PARALLAX ====================
