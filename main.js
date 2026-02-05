@@ -7,24 +7,36 @@
     'use strict';
 
     // ==================== LOADING SCREEN ====================
-    const loader = document.getElementById('loader');
-    const loaderBar = document.getElementById('loaderBar');
-    let loadProgress = 0;
+    var loader = document.getElementById('loader');
+    var loaderBar = document.getElementById('loaderBar');
+    var loadProgress = 0;
+    var loaderDone = false;
 
-    const loadInterval = setInterval(function() {
+    function finishLoading() {
+        if (loaderDone) return;
+        loaderDone = true;
+        loader.classList.add('hidden');
+        document.body.style.overflow = '';
+        initAnimations();
+    }
+
+    var loadInterval = setInterval(function() {
         loadProgress += Math.random() * 15 + 5;
         if (loadProgress > 100) loadProgress = 100;
         loaderBar.style.width = loadProgress + '%';
 
         if (loadProgress >= 100) {
             clearInterval(loadInterval);
-            setTimeout(function() {
-                loader.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                initAnimations();
-            }, 500);
+            setTimeout(finishLoading, 500);
         }
     }, 150);
+
+    // Safety timeout: never leave loader stuck for more than 5s
+    setTimeout(function() {
+        clearInterval(loadInterval);
+        if (loaderBar) loaderBar.style.width = '100%';
+        setTimeout(finishLoading, 200);
+    }, 5000);
 
     // Prevent scroll during loading
     document.body.style.overflow = 'hidden';
