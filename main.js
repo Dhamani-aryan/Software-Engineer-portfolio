@@ -148,18 +148,41 @@
     var mobileMenu = document.getElementById('mobileMenu');
     var mobileLinks = document.querySelectorAll('.mobile-link');
 
+    function closeMobileMenu() {
+        hamburger.classList.remove('active');
+        mobileMenu.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
     hamburger.addEventListener('click', function() {
-        hamburger.classList.toggle('active');
-        mobileMenu.classList.toggle('active');
-        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+        var isOpen = mobileMenu.classList.contains('active');
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            hamburger.classList.add('active');
+            mobileMenu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     });
 
     mobileLinks.forEach(function(link) {
         link.addEventListener('click', function() {
-            hamburger.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = 'auto';
+            closeMobileMenu();
         });
+    });
+
+    // Close mobile menu on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+
+    // Close mobile menu on window resize past mobile breakpoint
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
     });
 
     // ==================== SCROLL PROGRESS BAR ====================
