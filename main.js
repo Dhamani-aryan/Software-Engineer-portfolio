@@ -29,13 +29,16 @@
     // Prevent scroll during loading
     document.body.style.overflow = 'hidden';
 
+    // ==================== TOUCH DETECTION ====================
+    var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
     // ==================== CUSTOM CURSOR ====================
     const cursorDot = document.getElementById('cursorDot');
     const cursorRing = document.getElementById('cursorRing');
     let cursorX = 0, cursorY = 0;
     let ringX = 0, ringY = 0;
 
-    if (cursorDot && cursorRing) {
+    if (cursorDot && cursorRing && !isTouchDevice) {
         document.addEventListener('mousemove', function(e) {
             cursorX = e.clientX;
             cursorY = e.clientY;
@@ -65,22 +68,29 @@
                 cursorRing.classList.remove('hover');
             });
         });
+    } else {
+        // Hide cursor elements on touch devices
+        if (cursorDot) cursorDot.style.display = 'none';
+        if (cursorRing) cursorRing.style.display = 'none';
     }
 
     // ==================== MAGNETIC BUTTONS ====================
-    var magneticBtns = document.querySelectorAll('.magnetic-btn');
-    magneticBtns.forEach(function(btn) {
-        btn.addEventListener('mousemove', function(e) {
-            var rect = btn.getBoundingClientRect();
-            var x = e.clientX - rect.left - rect.width / 2;
-            var y = e.clientY - rect.top - rect.height / 2;
-            btn.style.transform = 'translate(' + (x * 0.3) + 'px, ' + (y * 0.3) + 'px)';
-        });
+    // Only enable on non-touch devices
+    if (!isTouchDevice) {
+        var magneticBtns = document.querySelectorAll('.magnetic-btn');
+        magneticBtns.forEach(function(btn) {
+            btn.addEventListener('mousemove', function(e) {
+                var rect = btn.getBoundingClientRect();
+                var x = e.clientX - rect.left - rect.width / 2;
+                var y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = 'translate(' + (x * 0.3) + 'px, ' + (y * 0.3) + 'px)';
+            });
 
-        btn.addEventListener('mouseleave', function() {
-            btn.style.transform = 'translate(0, 0)';
+            btn.addEventListener('mouseleave', function() {
+                btn.style.transform = 'translate(0, 0)';
+            });
         });
-    });
+    }
 
     // ==================== THEME TOGGLE ====================
     var themeToggle = document.getElementById('themeToggle');
@@ -355,25 +365,28 @@
     });
 
     // ==================== 3D TILT CARDS ====================
-    var tiltCards = document.querySelectorAll('.tilt-card');
+    // Only enable on non-touch devices — tilt is unusable on touch
+    if (!isTouchDevice) {
+        var tiltCards = document.querySelectorAll('.tilt-card');
 
-    tiltCards.forEach(function(card) {
-        card.addEventListener('mousemove', function(e) {
-            var rect = card.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
-            var centerX = rect.width / 2;
-            var centerY = rect.height / 2;
-            var rotateX = (y - centerY) / centerY * -8;
-            var rotateY = (x - centerX) / centerX * 8;
+        tiltCards.forEach(function(card) {
+            card.addEventListener('mousemove', function(e) {
+                var rect = card.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                var centerX = rect.width / 2;
+                var centerY = rect.height / 2;
+                var rotateX = (y - centerY) / centerY * -8;
+                var rotateY = (x - centerX) / centerX * 8;
 
-            card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
+                card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
         });
-
-        card.addEventListener('mouseleave', function() {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-        });
-    });
+    }
 
     // ==================== CONTACT FORM ====================
     var contactForm = document.getElementById('contactForm');

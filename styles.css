@@ -1795,6 +1795,59 @@ button, input, textarea {
     }
 }
 
+/* ==================== TOUCH DEVICES ==================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Restore default cursors everywhere */
+    body, a, button, input, textarea, .filter-btn {
+        cursor: auto;
+    }
+
+    /* Always show project overlay links on touch — no hover available */
+    .project-overlay {
+        opacity: 1;
+        background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 60%);
+    }
+
+    .project-link-icon {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Disable hover transforms that feel broken on touch */
+    .skill-category:hover,
+    .timeline-card:hover {
+        transform: none;
+    }
+
+    .social-icon:hover {
+        transform: none;
+    }
+
+    .btn-primary:hover,
+    .btn-outline:hover {
+        transform: none;
+    }
+
+    /* Larger tap targets for mobile */
+    .social-icon,
+    .contact-social,
+    .project-link-icon {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .filter-btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Hide scroll indicator on mobile — takes space */
+    .scroll-indicator {
+        display: none;
+    }
+}
+
 /* ==================== REDUCED MOTION ==================== */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
