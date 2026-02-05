@@ -462,6 +462,13 @@
                     formSuccess.classList.add('show');
                     contactForm.reset();
 
+                    // Force labels back to placeholder position after reset
+                    contactForm.querySelectorAll('.form-group label').forEach(function(label) {
+                        label.style.top = '';
+                        label.style.fontSize = '';
+                        label.style.color = '';
+                    });
+
                     // Reset after 5s
                     setTimeout(function() {
                         formSuccess.classList.remove('show');

@@ -1474,10 +1474,12 @@ button, input, textarea {
     border: none;
     border-bottom: 2px solid var(--border-color);
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 16px; /* Prevents iOS auto-zoom on focus */
     outline: none;
     transition: border-color var(--transition-base);
-    resize: none;
+    resize: vertical;
+    -webkit-appearance: none;
+    border-radius: 0;
 }
 
 .form-group label {
