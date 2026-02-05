@@ -106,6 +106,14 @@ body {
     overflow-x: hidden;
     transition: background-color 0.5s ease, color 0.5s ease;
     cursor: none;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent horizontal overflow from any section */
+.section,
+.hero,
+.footer {
+    overflow-x: hidden;
 }
 
 /* Show default cursor on touch devices */
@@ -837,6 +845,7 @@ button, input, textarea {
 
 .about-image-wrapper {
     position: relative;
+    overflow: hidden;
 }
 
 .about-image-frame {
@@ -1235,6 +1244,7 @@ button, input, textarea {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px 0;
+    overflow: hidden;
 }
 
 .timeline-line {
