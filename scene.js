@@ -14,23 +14,44 @@
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 30;
 
+    const isMobileDevice = window.innerWidth < 768;
+    const isSmallMobile = window.innerWidth < 480;
+
     const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
-        antialias: true,
+        antialias: !isMobileDevice, // Disable AA on mobile for performance
         alpha: true,
-        powerPreference: 'high-performance'
+        powerPreference: isMobileDevice ? 'low-power' : 'high-performance'
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2));
     renderer.setClearColor(0x000000, 0);
 
-    // ==================== MOUSE TRACKING ====================
+    // ==================== MOUSE / TOUCH TRACKING ====================
     const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
 
     document.addEventListener('mousemove', function(e) {
         mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
         mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
     });
+
+    // Touch support for mobile — gentle parallax on touch move
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 0) {
+            mouse.targetX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+            mouse.targetY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+        }
+    }, { passive: true });
+
+    // Also respond to device orientation on mobile
+    if (isMobileDevice && window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', function(e) {
+            if (e.gamma !== null && e.beta !== null) {
+                mouse.targetX = Math.max(-1, Math.min(1, e.gamma / 30));
+                mouse.targetY = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+            }
+        }, { passive: true });
+    }
 
     // ==================== DETECT THEME ====================
     function isDarkTheme() {
@@ -58,8 +79,12 @@
     }
 
     // ==================== PARTICLE SYSTEM ====================
-    const isMobile = window.innerWidth < 768;
-    const PARTICLE_COUNT = isMobile ? 300 : 800;
+    var PARTICLE_COUNT = 800;
+    if (isSmallMobile) {
+        PARTICLE_COUNT = 150;
+    } else if (isMobileDevice) {
+        PARTICLE_COUNT = 300;
+    }
 
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(PARTICLE_COUNT * 3);
@@ -234,24 +259,27 @@
         originalY: -7
     });
 
-    // Torus Knot (extra premium shape)
-    const knotGeom = new THREE.TorusKnotGeometry(1.8, 0.5, 64, 8, 2, 3);
-    const knotMat = new THREE.MeshBasicMaterial({
-        color: themeColors.particle2,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.08
-    });
-    const torusKnot = new THREE.Mesh(knotGeom, knotMat);
-    torusKnot.position.set(-5, -12, -6);
-    scene.add(torusKnot);
-    geometries.push({
-        mesh: torusKnot,
-        rotSpeed: { x: 0.001, y: 0.004, z: 0.002 },
-        floatSpeed: 0.0007,
-        floatAmplitude: 1.2,
-        originalY: -12
-    });
+    // Torus Knot (extra premium shape) — skip on small mobile
+    var torusKnot = null;
+    if (!isSmallMobile) {
+        var knotGeom = new THREE.TorusKnotGeometry(1.8, 0.5, isMobileDevice ? 32 : 64, 8, 2, 3);
+        var knotMat = new THREE.MeshBasicMaterial({
+            color: themeColors.particle2,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.08
+        });
+        torusKnot = new THREE.Mesh(knotGeom, knotMat);
+        torusKnot.position.set(-5, -12, -6);
+        scene.add(torusKnot);
+        geometries.push({
+            mesh: torusKnot,
+            rotSpeed: { x: 0.001, y: 0.004, z: 0.002 },
+            floatSpeed: 0.0007,
+            floatAmplitude: 1.2,
+            originalY: -12
+        });
+    }
 
     // ==================== CONNECTION LINES ====================
     const lineMaterial = new THREE.LineBasicMaterial({
@@ -261,8 +289,14 @@
         blending: THREE.AdditiveBlending
     });
 
-    const CONNECTION_DISTANCE = 8;
-    const MAX_CONNECTIONS = isMobile ? 50 : 150;
+    var CONNECTION_DISTANCE = 8;
+    var MAX_CONNECTIONS = 150;
+    if (isSmallMobile) {
+        MAX_CONNECTIONS = 20;
+        CONNECTION_DISTANCE = 10;
+    } else if (isMobileDevice) {
+        MAX_CONNECTIONS = 50;
+    }
 
     let linesMesh = null;
 
@@ -314,7 +348,7 @@
         torus.material.color = colors.particle2;
         octahedron.material.color = colors.particle3;
         dodecahedron.material.color = colors.particle1;
-        torusKnot.material.color = colors.particle2;
+        if (torusKnot) torusKnot.material.color = colors.particle2;
 
         // Update particle colors
         const colorAttr = particleGeometry.attributes.color;
@@ -387,8 +421,9 @@
             g.mesh.position.y += mouse.y * 0.02;
         });
 
-        // Update connections every 30 frames
-        if (frameCount % 30 === 0) {
+        // Update connections periodically (less often on mobile)
+        var connectionInterval = isMobileDevice ? 90 : 30;
+        if (frameCount % connectionInterval === 0) {
             updateConnections();
         }
 
