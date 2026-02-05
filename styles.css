@@ -1676,16 +1676,33 @@ button, input, textarea {
     }
 
     .about-image-wrapper {
-        max-width: 400px;
+        max-width: 350px;
         margin: 0 auto;
     }
 
+    .about-content {
+        text-align: center;
+    }
+
+    .about-subtitle {
+        font-size: 1.3rem;
+    }
+
+    .about-details {
+        justify-items: center;
+    }
+
+    .about-detail {
+        justify-content: center;
+    }
+
     .about-stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 
     .skills-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
     }
 
     .projects-grid {
@@ -1694,6 +1711,33 @@ button, input, textarea {
 
     .contact-grid {
         grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .contact-info {
+        text-align: center;
+    }
+
+    .contact-details {
+        align-items: center;
+    }
+
+    .contact-socials {
+        justify-content: center;
+    }
+
+    .section {
+        padding: 100px 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-stats {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
